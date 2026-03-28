@@ -3,32 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dodgy Block by thenumane</title>
+    <title>Dodgy_Block by thenumane</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/images/logo.svg">
     <link rel="stylesheet" href="style.css">
+    
 </head>
 <body>
+    <!-- Start & Registration Screen -->
     <div id="startScreen">
-        <h1>System Ready</h1>
-        <div class="controls-info">
-            <strong>Controls:</strong><br>
-            - Desktop: Arrow Keys<br>
-            - Mobile: On-Screen Buttons or Tilt
+        <div class="menu-panel">
+            <!-- MAIN MENU LOGO -->
+            <img src="./assets/images/logo.svg" alt="Dodgy_Block Logo" class="menu-logo">
+            
+            <div class="title-group">
+                <h1 class="glitch-title">Dodgy_Block</h1>
+                <p class="subtitle">Initialize connection to global network</p>
+            </div>
+            
+            <div class="auth-box">
+                <div class="input-wrapper">
+                    <span class="prompt-cursor">></span>
+                    <input type="text" id="usernameInput" placeholder="ENTER CALLSIGN" maxlength="12" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="controls-info">
+                <strong>HARDWARE UPLINK:</strong><br>
+                <span class="control-badge">Desktop: WASD / Arrows</span>
+                <span class="control-badge">Mobile: Touch Zones / Tilt</span>
+            </div>
+
+            <div class="action-group">
+                <button id="startBtn" class="primary-btn">BOOT ENGINE</button>
+                <button id="showLeaderboardBtn" class="secondary-btn">VIEW NETWORK RANKINGS</button>
+            </div>
         </div>
-        <button id="startBtn">Boot Engine</button>
     </div>
 
+    <!-- Creative Leaderboard Overlay -->
+    <div id="leaderboardScreen" style="display: none;">
+        <h2>GLOBAL TOP 10</h2>
+        <div id="leaderboardData">Loading Network Data...</div>
+        <button id="closeLeaderboardBtn" class="secondary-btn">Close Terminal</button>
+    </div>
+
+    <!-- Game Over DOM Overlay -->
+    <div id="gameOverScreen" style="display: none;">
+        <!-- GAMEOVER MENU LOGO -->
+        <img src="./assets/images/logo.svg" alt="Logo" class="game-over-logo">
+        <h1 class="critical-text">CRITICAL HIT</h1>
+        <p id="finalScoreText">Data Survived: 0 mb</p>
+        <div class="go-buttons">
+            <button id="rebootBtn" class="go-btn primary">REBOOT [R]</button>
+            <button id="mainMenuBtn" class="go-btn secondary-btn">MAIN MENU</button>
+        </div>
+    </div>
+
+    <!-- In-Game Header -->
     <div class="game-header">
-        <h1>Dodge the Blocks</h1>
-        <p><strong>Orange</strong>: Normal | <strong>Purple</strong>: Wobbler | <strong>Red</strong>: Chaser</p>
+        <h1 class="in-game-title">Dodgy_Block</h1>
+        <p class="legend">
+            <span style="color:#ff9800;">Normal</span> | 
+            <span style="color:#9c27b0;">Wobbler</span> | 
+            <span style="color:#f44336;">Chaser</span>
+        </p>
     </div>
     
+    <!-- Canvas -->
     <canvas id="gameCanvas" width="400" height="600"></canvas>
 
+    <!-- Mobile UI Controls -->
     <div id="mobileControls">
         <button class="control-btn" id="btnLeft">LEFT</button>
         <button class="control-btn" id="btnRight">RIGHT</button>
     </div>
 
-    <script src="script.js"></script>
+        <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>

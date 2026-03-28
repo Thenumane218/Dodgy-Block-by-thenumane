@@ -1,3 +1,4 @@
+/* --- CORE ENGINE LAYOUT --- */
 body {
     display: flex;
     flex-direction: column;
@@ -5,34 +6,37 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #0a0a0a;
+    /* Deep space radial background */
+    background: radial-gradient(circle at center, #1a1a24 0%, #0a0a0f 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #eee;
     overflow: hidden; 
     touch-action: none; 
 }
 
+/* --- IN-GAME HUD --- */
 .game-header {
     text-align: center;
     margin-bottom: 1vh;
     z-index: 5;
 }
 
-h1 {
+.in-game-title {
     color: #00bcd4;
     margin: 5px 0;
     font-size: clamp(1.2em, 4vw, 2em); 
     text-transform: uppercase;
     letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
 }
 
-p { margin: 2px 0; font-size: clamp(0.7em, 2vw, 0.9em); color: #888; }
+.legend { margin: 2px 0; font-size: clamp(0.7em, 2vw, 0.9em); font-weight: bold; }
 
 canvas {
-    background-color: #1a1a1a;
+    background-color: #111115;
     border: 2px solid #333;
     border-radius: 8px;
-    box-shadow: 0 0 30px rgba(0, 188, 212, 0.1);
+    box-shadow: 0 0 30px rgba(0, 188, 212, 0.1), inset 0 0 20px rgba(0,0,0,0.8);
     display: block;
     max-width: 100vw;
     max-height: 70vh; 
@@ -40,6 +44,7 @@ canvas {
     aspect-ratio: 2 / 3; 
 }
 
+/* --- MOBILE CONTROLS --- */
 #mobileControls {
     display: flex;
     width: 100%;
@@ -55,20 +60,22 @@ canvas {
     flex: 1;
     margin: 0 10px;
     padding: 20px;
-    background: rgba(0, 188, 212, 0.1);
-    border: 2px solid #00bcd4;
+    background: rgba(0, 188, 212, 0.05);
+    border: 2px solid rgba(0, 188, 212, 0.3);
     color: #00bcd4;
     font-weight: bold;
     font-size: 1.5em;
     border-radius: 12px;
     user-select: none;
     touch-action: manipulation; 
-    transition: background 0.1s;
+    transition: all 0.1s ease;
 }
 
 .control-btn:active, .control-btn.active {
-    background: rgba(0, 188, 212, 0.5);
+    background: rgba(0, 188, 212, 0.3);
+    border-color: #00bcd4;
     color: #fff;
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.4);
 }
 
 @media (min-width: 768px) {
@@ -76,31 +83,294 @@ canvas {
     canvas { max-height: 80vh; }
 }
 
+/* =========================================
+   NEW CYBER-ARCADE START SCREEN UI
+   ========================================= */
+
 #startScreen {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(10, 10, 10, 0.98);
+    /* CSS Grid background pattern for that digital look */
+    background-color: #050505;
+    background-image: 
+        linear-gradient(rgba(0, 188, 212, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 188, 212, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 10;
 }
 
-#startBtn {
+/* Glassmorphism Panel */
+.menu-panel {
+    background: rgba(15, 15, 20, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 188, 212, 0.2);
+    border-radius: 16px;
+    padding: 40px 30px;
+    width: 90%;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.title-group { text-align: center; margin-bottom: 30px; }
+
+.glitch-title {
+    color: #fff;
+    font-family: 'Consolas', monospace;
+    font-size: clamp(2.2em, 6vw, 3em);
+    margin: 0 0 5px 0;
+    letter-spacing: 4px;
+    text-shadow: 
+        0 0 10px rgba(0, 188, 212, 0.8),
+        -2px 0 #ff00c8, 
+        2px 0 #00bcd4;
+}
+
+.subtitle {
+    color: #888;
+    font-family: 'Consolas', monospace;
+    font-size: clamp(0.75em, 2vw, 0.9em);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+/* Terminal Input Field */
+.auth-box { width: 100%; margin-bottom: 25px; }
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 0 15px;
+    transition: all 0.3s ease;
+}
+
+.input-wrapper:focus-within {
+    border-color: #00bcd4;
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.3);
+}
+
+.prompt-cursor {
+    color: #00bcd4;
+    font-family: 'Consolas', monospace;
+    font-weight: bold;
+    font-size: 1.2em;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+#usernameInput {
+    width: 100%;
+    padding: 15px 10px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.2em;
+    font-family: "Consolas", monospace;
+    text-transform: uppercase;
+    outline: none;
+}
+#usernameInput::placeholder { color: #555; }
+
+/* Hardware Info Badges */
+.controls-info {
+    width: 100%;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #888;
+    font-size: 0.85em;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.controls-info strong { color: #aaa; letter-spacing: 1px; }
+
+.control-badge {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Action Buttons */
+.action-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #00bcd4 0%, #008ba3 100%);
+    color: #111;
+    border: none;
+    padding: 18px;
+    font-size: 1.2em;
+    font-family: 'Consolas', monospace;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
+    transition: all 0.2s ease;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 188, 212, 0.6);
+}
+.primary-btn:active { transform: translateY(1px); box-shadow: 0 2px 10px rgba(0, 188, 212, 0.4); }
+
+.secondary-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #aaa;
+    padding: 15px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* --- GAME OVER & LEADERBOARD OVERLAYS --- */
+#gameOverScreen, #leaderboardScreen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+    background: rgba(15, 15, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 40px 20px;
+    z-index: 20;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#leaderboardScreen { border-color: rgba(255, 152, 0, 0.5); }
+
+.critical-text {
+    color: #f44336;
+    font-family: 'Consolas', monospace;
+    font-size: clamp(2em, 8vw, 2.8em);
+    margin: 0 0 10px 0;
+    text-shadow: 0 0 20px rgba(244, 67, 54, 0.6);
+    letter-spacing: 2px;
+}
+
+#finalScoreText {
+    color: #eee;
+    font-family: 'Consolas', monospace;
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+.go-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; }
+
+.go-btn {
+    padding: 15px;
+    font-family: 'Consolas', monospace;
+    font-size: 1.1em;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.go-btn.primary {
     background: #00bcd4;
     color: #111;
     border: none;
-    padding: 15px 30px;
-    font-size: 1.2em;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.3);
+}
+.go-btn.primary:hover { background: #00e5ff; box-shadow: 0 0 20px rgba(0, 188, 212, 0.5); }
+.go-btn:active { transform: scale(0.96); }
+
+/* Leaderboard Specifics */
+#leaderboardScreen h2 {
+    color: #ff9800;
+    margin-top: 0;
+    letter-spacing: 3px;
+    text-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+    font-family: 'Consolas', monospace;
 }
 
-.controls-info {
-    margin-top: 20px; text-align: left; color: #aaa;
-    background: #111; padding: 15px; border-radius: 5px;
-    border: 1px solid #333;
+#leaderboardData {
+    width: 100%;
+    margin-bottom: 25px;
+    text-align: left;
+    font-family: "Consolas", monospace;
+    color: #eee;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.lb-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.lb-row:nth-child(1) { color: #ffd700; font-weight: bold; font-size: 1.2em; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); } 
+.lb-row:nth-child(2) { color: #c0c0c0; font-weight: bold; font-size: 1.1em;} 
+.lb-row:nth-child(3) { color: #cd7f32; font-weight: bold; } 
+.lb-me { 
+    background: rgba(0, 188, 212, 0.15); 
+    color: #00e5ff; 
+    border-radius: 4px; 
+    border: 1px solid rgba(0, 188, 212, 0.3);
+}
+
+/* --- BRANDING ASSETS --- */
+
+/* Main Menu Logo Style */
+.menu-logo {
+    width: 150px; /* Adjust size as needed */
+    height: auto;
+    margin-bottom: -10px; /* Pulls title closer to logo */
+    filter: drop-shadow(0 0 10px rgba(0, 188, 212, 0.5));
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Game Over Logo Style (Slightly smaller) */
+.game-over-logo {
+    width: 100px;
+    height: auto;
+    margin-bottom: 10px;
+    filter: grayscale(0.5) drop-shadow(0 0 10px rgba(244, 67, 54, 0.5));
+}
+
+/* Floating animation for the logo */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
 }
