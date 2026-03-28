@@ -374,3 +374,143 @@ canvas {
     50% { transform: translateY(-10px); }
     100% { transform: translateY(0px); }
 }
+
+.go-btn.share-x {
+    background: #000; /* X Brand Black */
+    color: #fff;
+    border: 1px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.go-btn.share-x:hover {
+    background: #111;
+    border-color: #555;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.auth-mode-toggle {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+.toggle-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #666;
+    padding: 8px;
+    font-family: 'Consolas', monospace;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.toggle-btn.active {
+    background: #00bcd4;
+    color: #111;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+}
+
+input[type="password"] {
+    width: 100%;
+    padding: 15px 10px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.2em;
+    font-family: "Consolas", monospace;
+    outline: none;
+}
+
+#welcomeBox {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#logoutBtn {
+    border-color: rgba(244, 67, 54, 0.3);
+    color: #888;
+}
+
+#logoutBtn:hover {
+    color: #f44336;
+    border-color: #f44336;
+    background: rgba(244, 67, 54, 0.1);
+}
+
+/* Ensure the auth/welcome containers don't create extra space when hidden */
+#authBox, #welcomeBox {
+    width: 100%;
+    transition: opacity 0.3s ease;
+}
+
+/* Ensure the menu-panel handles the vertical stack strictly */
+.menu-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0; /* Control spacing via margins instead */
+}
+
+/* Fix the user display text to match your cyber theme */
+#displayUsername {
+    text-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+    text-transform: uppercase;
+}
+
+#soundToggleBtn {
+    transition: all 0.3s ease;
+}
+
+.badge-verified {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    margin-left: 6px;
+    background-color: #00bcd4;
+    color: #111;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 50%;
+    vertical-align: middle;
+    box-shadow: 0 0 8px rgba(0, 188, 212, 0.6);
+    /* The "Checkmark" */
+    content: '✓'; 
+}
+
+/* Optional: Make verified names glow slightly */
+.lb-row.verified span:first-child {
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+}
+
+/* Flashing New Record Animation */
+.new-record-tag {
+  color: #ffeb3b; /* Cyber Gold */
+  font-weight: bold;
+  text-shadow: 0 0 8px #ffeb3b;
+  margin-left: 10px;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  animation: flash-record 0.4s infinite alternate;
+}
+
+@keyframes flash-record {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0.3; transform: scale(1.1); }
+}

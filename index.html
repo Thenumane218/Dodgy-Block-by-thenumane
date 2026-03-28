@@ -1,87 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta property="og:title" content="Dodgy_Block | Data Survival" />
+    <meta
+      property="og:description"
+      content="Can you survive the corruption? Global Leaderboards are live."
+    />
+    <meta property="og:image" content="./assets/images/logo.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>Dodgy_Block by thenumane</title>
-    <link rel="icon" type="image/svg+xml" href="./assets/images/logo.svg">
-    <link rel="stylesheet" href="style.css">
-    
-</head>
-<body>
+    <link rel="icon" type="image/svg+xml" href="./assets/images/logo.svg" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <!-- Start & Registration Screen -->
     <div id="startScreen">
-        <div class="menu-panel">
-            <!-- MAIN MENU LOGO -->
-            <img src="./assets/images/logo.svg" alt="Dodgy_Block Logo" class="menu-logo">
-            
-            <div class="title-group">
-                <h1 class="glitch-title">Dodgy_Block</h1>
-                <p class="subtitle">Initialize connection to global network</p>
-            </div>
-            
-            <div class="auth-box">
-                <div class="input-wrapper">
-                    <span class="prompt-cursor">></span>
-                    <input type="text" id="usernameInput" placeholder="ENTER CALLSIGN" maxlength="12" autocomplete="off">
-                </div>
-            </div>
+      <div class="menu-panel">
+        <img
+          src="./assets/images/logo.svg"
+          alt="Dodgy_Block Logo"
+          class="menu-logo"
+        />
 
-            <div class="controls-info">
-                <strong>HARDWARE UPLINK:</strong><br>
-                <span class="control-badge">Desktop: WASD / Arrows</span>
-                <span class="control-badge">Mobile: Touch Zones / Tilt</span>
-            </div>
-
-            <div class="action-group">
-                <button id="startBtn" class="primary-btn">BOOT ENGINE</button>
-                <button id="showLeaderboardBtn" class="secondary-btn">VIEW NETWORK RANKINGS</button>
-            </div>
+        <div class="title-group">
+          <h1 class="glitch-title">Dodgy_Block</h1>
+          <p class="subtitle">It's simple, right? just left to right...</p>
         </div>
+
+        <div class="auth-box" id="authBox">
+          <div class="auth-mode-toggle">
+            <button id="loginModeBtn" class="toggle-btn active">LOGIN</button>
+            <button id="registerModeBtn" class="toggle-btn">REGISTER</button>
+          </div>
+          <div class="input-wrapper">
+            <span class="prompt-cursor">></span>
+            <input
+              type="text"
+              id="usernameInput"
+              placeholder="ENTER CALLSIGN"
+              maxlength="12"
+              autocomplete="off"
+            />
+          </div>
+          <div class="input-wrapper" style="margin-top: 10px">
+            <span class="prompt-cursor">*</span>
+            <input
+              type="password"
+              id="passwordInput"
+              placeholder="PASSWORD"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+
+        <div
+          id="welcomeBox"
+          style="
+            display: none;
+            text-align: center;
+            margin-bottom: 25px;
+            width: 100%;
+          "
+        >
+          <p class="subtitle" style="color: #00bcd4; margin-bottom: 5px">
+            UPLINK ESTABLISHED
+          </p>
+          <h2
+            id="displayUsername"
+            style="
+              letter-spacing: 3px;
+              margin: 0;
+              color: #fff;
+              font-family: &quot;Consolas&quot;, monospace;
+            "
+          >
+            USER: ---
+          </h2>
+          <button
+            id="logoutBtn"
+            class="secondary-btn"
+            style="font-size: 0.7em; padding: 5px 10px; margin-top: 10px"
+          >
+            DISCONNECT
+          </button>
+        </div>
+
+        <div class="controls-info">
+          <strong>HARDWARE UPLINK:</strong><br />
+          <span class="control-badge">Desktop: WASD / Arrows</span>
+          <span class="control-badge">Mobile: Touch Buttons</span>
+        </div>
+
+        <div class="action-group">
+          <button id="startBtn" class="primary-btn">BOOT ENGINE</button>
+          <button id="soundToggleBtn" class="secondary-btn">SOUND: ON</button>
+          <button id="showLeaderboardBtn" class="secondary-btn">
+            VIEW NETWORK RANKINGS
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Creative Leaderboard Overlay -->
-    <div id="leaderboardScreen" style="display: none;">
-        <h2>GLOBAL TOP 10</h2>
-        <div id="leaderboardData">Loading Network Data...</div>
-        <button id="closeLeaderboardBtn" class="secondary-btn">Close Terminal</button>
+    <div id="leaderboardScreen" style="display: none">
+      <div class="menu-panel" style="border-color: #ff9800">
+        <h2>DAILY TOP 10</h2>
+        <p
+          class="subtitle"
+          style="font-size: 0.8em; margin-top: -10px; color: #ff9800"
+        >
+          RESETS IN: <span id="resetTimer">--:--:--</span>
+        </p>
+        <div
+          id="leaderboardData"
+          style="width: 100%; min-height: 50px; margin: 20px 0"
+        >
+          Scanning Network...
+        </div>
+        <button id="closeLeaderboardBtn" class="secondary-btn">
+          CLOSE TERMINAL
+        </button>
+      </div>
     </div>
 
     <!-- Game Over DOM Overlay -->
-    <div id="gameOverScreen" style="display: none;">
-        <!-- GAMEOVER MENU LOGO -->
-        <img src="./assets/images/logo.svg" alt="Logo" class="game-over-logo">
-        <h1 class="critical-text">CRITICAL HIT</h1>
-        <p id="finalScoreText">Data Survived: 0 mb</p>
-        <div class="go-buttons">
-            <button id="rebootBtn" class="go-btn primary">REBOOT [R]</button>
-            <button id="mainMenuBtn" class="go-btn secondary-btn">MAIN MENU</button>
-        </div>
+    <div id="gameOverScreen" style="display: none">
+      <img src="./assets/images/logo.svg" alt="Logo" class="game-over-logo" />
+      <h1 class="critical-text">CRITICAL HIT</h1>
+
+      <p id="finalScoreText">DATA SURVIVED: 0 mb</p>
+      <p
+        id="bestScoreText"
+        style="
+          color: #00bcd4;
+          margin-top: -15px;
+          font-family: &quot;Consolas&quot;, monospace;
+          font-size: 0.9em;
+          letter-spacing: 1px;
+        "
+      >
+        PERSONAL BEST: 0 mb
+      </p>
+      <p
+        id="rankText"
+        style="
+          color: #ff9800;
+          margin-top: -10px;
+          font-family: &quot;Consolas&quot;, monospace;
+          font-size: 0.85em;
+          opacity: 0.9;
+        "
+      >
+        NETWORK RANKING: #-- / --
+      </p>
+
+      <div class="go-buttons">
+        <button id="rebootBtn" class="go-btn primary">REBOOT [R]</button>
+        <button id="shareBtn" class="go-btn share-x">SHARE SCORE ON X</button>
+        <button id="mainMenuBtn" class="go-btn secondary-btn">MAIN MENU</button>
+      </div>
     </div>
 
     <!-- In-Game Header -->
     <div class="game-header">
-        <h1 class="in-game-title">Dodgy_Block</h1>
-        <p class="legend">
-            <span style="color:#ff9800;">Normal</span> | 
-            <span style="color:#9c27b0;">Wobbler</span> | 
-            <span style="color:#f44336;">Chaser</span>
-        </p>
+      <h1 class="in-game-title">Dodgy_Block</h1>
+      <p class="legend">
+        <span style="color: #ff9800">Normal</span> |
+        <span style="color: #9c27b0">Wobbler</span> |
+        <span style="color: #f44336">Chaser</span>
+      </p>
     </div>
-    
-    <!-- Canvas -->
+
     <canvas id="gameCanvas" width="400" height="600"></canvas>
 
     <!-- Mobile UI Controls -->
     <div id="mobileControls">
-        <button class="control-btn" id="btnLeft">LEFT</button>
-        <button class="control-btn" id="btnRight">RIGHT</button>
+      <button class="control-btn" id="btnLeft">LEFT</button>
+      <button class="control-btn" id="btnRight">RIGHT</button>
     </div>
 
-        <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script src="config.js"></script>
     <script src="script.js" defer></script>
-</body>
+  </body>
 </html>
