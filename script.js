@@ -1,251 +1,299 @@
-// --- Canvas Setup ---
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startScreen = document.getElementById('startScreen');
+        const startBtn = document.getElementById('startBtn');
 
-// --- Game State Variables ---
-let player;
-let fallingBlocks = [];
-let score;
-let gameOver;
-let gameFrame;
-let lastTime = 0;
-let blockSpawnTimer = 0;
+        // --- Game State ---
+        let player;
+        let fallingBlocks = [];
+        let score = 0;
+        let gameOver = false;
+        let gameFrame;
+        let lastTime = 0; 
+        let blockSpawnTimer = 0; 
 
-// --- Game Configuration ---
-const PLAYER_SPEED = 350; // Increased base player speed to handle harder blocks
-const BLOCK_SIZE = 25;
-const BASE_SPAWN_RATE_MS = 800;
-const MIN_SPAWN_RATE_MS = 150; // Hard cap so the game remains mathematically possible
-const SCORE_INCREMENT_PER_SEC = 10;
+        // --- Hardware Input State ---
+        const keys = {};
+        let tiltGamma = 0; 
+        let touchingLeft = false;
+        let touchingRight = false;
 
-// --- Keyboard Input Tracking ---
-const keys = {};
+        // --- Game Configuration ---
+        const PLAYER_SPEED = 400; 
+        const BLOCK_SIZE = 25;
+        const BASE_SPAWN_RATE_MS = 800; 
+        const MIN_SPAWN_RATE_MS = 200; 
+        const SCORE_INCREMENT_PER_SEC = 10; 
 
-document.addEventListener("keydown", (e) => {
-  keys[e.code] = true;
-  if (["ArrowLeft", "ArrowRight", "Space"].includes(e.code)) e.preventDefault();
-  if (gameOver && e.code === "KeyR") initGame();
-});
-document.addEventListener("keyup", (e) => (keys[e.code] = false));
+        // --- Input Listeners (Keyboard) ---
+        document.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+            if (['ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
+            // Allow desktop quick restart
+            if (gameOver && e.code === 'KeyR') initGame(); 
+        });
+        document.addEventListener('keyup', (e) => keys[e.code] = false);
 
-// --- Classes ---
-class Player {
-  constructor() {
-    this.width = 40;
-    this.height = 20;
-    this.x = (canvas.width - this.width) / 2;
-    this.y = canvas.height - this.height - 15;
-    this.speed = PLAYER_SPEED;
-    this.color = "#00bcd4";
-  }
+        // --- Input Listeners (Touch) ---
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Stop mobile scrolling/zooming
+            
+            if (gameOver) {
+                initGame();
+                return;
+            }
 
-  update(dt) {
-    if (keys["ArrowLeft"]) this.x -= this.speed * dt;
-    if (keys["ArrowRight"]) this.x += this.speed * dt;
-    this.x = Math.max(0, Math.min(canvas.width - this.width, this.x));
-  }
+            // Figure out if the touch was on the left or right half of the canvas
+            for (let i = 0; i < e.touches.length; i++) {
+                const touch = e.touches[i];
+                const rect = canvas.getBoundingClientRect();
+                // Map the screen touch X to the canvas internal resolution
+                const touchX = touch.clientX - rect.left;
+                
+                if (touchX < rect.width / 2) touchingLeft = true;
+                else touchingRight = true;
+            }
+        }, { passive: false }); // Non-passive allows preventDefault to work safely
 
-  draw(ctx) {
-    ctx.fillStyle = this.color;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.shadowBlur = 0; // Reset for performance
-  }
-}
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            // Reset touch states if fingers are lifted
+            if (e.touches.length === 0) {
+                touchingLeft = false;
+                touchingRight = false;
+            }
+        }, { passive: false });
+        
+        canvas.addEventListener('touchcancel', () => {
+            touchingLeft = false;
+            touchingRight = false;
+        });
 
-class Block {
-  constructor(x, y, speed, type) {
-    this.width = BLOCK_SIZE;
-    this.height = BLOCK_SIZE;
-    this.x = x;
-    this.y = y;
-    this.speed = speed;
-    this.type = type;
-    this.startX = x; // Anchor point for Wobblers
-    this.timeAlive = 0;
+        // --- Boot Sequence & Sensor Request ---
+        startBtn.addEventListener('click', () => {
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation);
+                        }
+                        bootGame(); // Boot regardless of permission, since we have touch fallback
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        bootGame();
+                    });
+            } else {
+                window.addEventListener('deviceorientation', handleOrientation);
+                bootGame();
+            }
+        });
 
-    // Configure appearance based on behavior type
-    if (this.type === "normal") {
-      this.color = "#ff9800"; // Orange
-    } else if (this.type === "wobbler") {
-      this.color = "#9c27b0"; // Purple
-    } else if (this.type === "chaser") {
-      this.color = "#f44336"; // Red
-    }
-  }
+        function handleOrientation(event) {
+            if (event.gamma !== null) tiltGamma = event.gamma;
+        }
 
-  update(dt) {
-    this.y += this.speed * dt;
-    this.timeAlive += dt;
+        // --- Classes ---
+        class Player {
+            constructor() {
+                this.width = 40;
+                this.height = 20;
+                this.x = (canvas.width - this.width) / 2;
+                this.y = canvas.height - this.height - 20;
+                this.speed = PLAYER_SPEED;
+                this.color = '#00bcd4';
+            }
+            
+            update(dt) {
+                let velocity = 0;
 
-    // --- Creative Mechanics ---
-    if (this.type === "wobbler") {
-      // Sine wave movement: Math.sin(time) creates smooth left/right oscillation
-      const amplitude = 60; // How far it swings
-      const frequency = 5; // How fast it swings
-      this.x = this.startX + Math.sin(this.timeAlive * frequency) * amplitude;
-    } else if (this.type === "chaser") {
-      // Drift towards the player's X coordinate, but slower than the player
-      const chaseSpeed = this.speed * 0.45;
-      if (this.x + this.width / 2 < player.x + player.width / 2) {
-        this.x += chaseSpeed * dt;
-      } else if (this.x + this.width / 2 > player.x + player.width / 2) {
-        this.x -= chaseSpeed * dt;
-      }
-    }
-  }
+                // --- The Universal Input Hierarchy ---
+                // 1. Keyboard overrides everything (highest precision)
+                if (keys['ArrowLeft']) velocity = -this.speed;
+                else if (keys['ArrowRight']) velocity = this.speed;
+                
+                // 2. Touch Screen fallback
+                else if (touchingLeft) velocity = -this.speed;
+                else if (touchingRight) velocity = this.speed;
 
-  draw(ctx) {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-  }
-}
+                // 3. Tilt Sensor (only fires if hands are off the screen and keyboard)
+                else if (tiltGamma !== 0) {
+                    const deadzone = 3; 
+                    const maxTilt = 30; 
+                    if (Math.abs(tiltGamma) > deadzone) {
+                        let normalizedTilt = tiltGamma / maxTilt;
+                        normalizedTilt = Math.max(-1, Math.min(1, normalizedTilt));
+                        velocity = normalizedTilt * this.speed;
+                    }
+                }
 
-// --- Game Logic ---
-function initGame() {
-  player = new Player();
-  fallingBlocks = [];
-  score = 0;
-  gameOver = false;
-  blockSpawnTimer = 0;
-  lastTime = performance.now();
+                this.x += velocity * dt;
+                this.x = Math.max(0, Math.min(canvas.width - this.width, this.x));
+            }
+            
+            draw(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.shadowBlur = 0; 
+            }
+        }
 
-  document.getElementById("instructions").textContent = "";
-  for (const key in keys) keys[key] = false;
+        class Block {
+            constructor(x, y, speed, type) {
+                this.width = BLOCK_SIZE;
+                this.height = BLOCK_SIZE;
+                this.x = x;
+                this.y = y;
+                this.speed = speed;
+                this.type = type;
+                this.startX = x; 
+                this.timeAlive = 0;
 
-  if (gameFrame) cancelAnimationFrame(gameFrame);
-  gameLoop(performance.now());
-}
+                if (this.type === 'normal') this.color = '#ff9800'; 
+                else if (this.type === 'wobbler') this.color = '#9c27b0'; 
+                else if (this.type === 'chaser') this.color = '#f44336'; 
+            }
+            
+            update(dt) {
+                this.y += this.speed * dt;
+                this.timeAlive += dt;
 
-function spawnBlock() {
-  // Calculate dynamic difficulty scalar based on score
-  // E.g., at score 100, difficulty is 2. At 200, it's 3.
-  const difficultyScalar = 1 + score / 100;
+                if (this.type === 'wobbler') {
+                    const amplitude = 50; 
+                    const frequency = 4;  
+                    this.x = this.startX + Math.sin(this.timeAlive * frequency) * amplitude;
+                } else if (this.type === 'chaser') {
+                    const chaseSpeed = this.speed * 0.4;
+                    if (this.x + this.width/2 < player.x + player.width/2) this.x += chaseSpeed * dt;
+                    else if (this.x + this.width/2 > player.x + player.width/2) this.x -= chaseSpeed * dt;
+                }
+            }
+            
+            draw(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
 
-  const x = Math.random() * (canvas.width - BLOCK_SIZE);
+        // --- Game Engine Logic ---
+        function bootGame() {
+            startScreen.style.display = 'none'; 
+            initGame();
+        }
 
-  // Base speed scales up with difficulty
-  const speed = (120 + Math.random() * 150) * difficultyScalar;
+        function initGame() {
+            player = new Player();
+            fallingBlocks = [];
+            score = 0;
+            gameOver = false;
+            blockSpawnTimer = 0;
+            tiltGamma = 0; 
+            touchingLeft = false;
+            touchingRight = false;
+            lastTime = performance.now(); 
+            
+            for (const key in keys) keys[key] = false;
 
-  // Determine block type via RNG and score thresholds
-  let type = "normal";
-  const roll = Math.random();
+            if (gameFrame) cancelAnimationFrame(gameFrame);
+            gameLoop(performance.now());
+        }
 
-  if (score > 50 && roll > 0.6) {
-    type = "wobbler"; // Starts appearing after score 50
-  }
-  if (score > 120 && roll > 0.8) {
-    type = "chaser"; // Starts appearing after score 120, rarer
-  }
+        function spawnBlock() {
+            const difficultyScalar = 1 + (score / 100); 
+            const x = Math.random() * (canvas.width - BLOCK_SIZE);
+            const speed = (150 + Math.random() * 150) * difficultyScalar;
 
-  fallingBlocks.push(new Block(x, -BLOCK_SIZE, speed, type));
-}
+            let type = 'normal';
+            const roll = Math.random();
 
-function update(dt) {
-  if (gameOver) return;
+            if (score > 50 && roll > 0.6) type = 'wobbler'; 
+            if (score > 120 && roll > 0.8) type = 'chaser'; 
 
-  player.update(dt);
+            fallingBlocks.push(new Block(x, -BLOCK_SIZE, speed, type));
+        }
 
-  // Dynamic Spawn Rate calculation
-  const difficultyScalar = 1 + score / 150;
-  let currentSpawnRate = BASE_SPAWN_RATE_MS / difficultyScalar;
-  currentSpawnRate = Math.max(MIN_SPAWN_RATE_MS, currentSpawnRate); // Apply hard cap
+        function update(dt) {
+            if (gameOver) return;
 
-  blockSpawnTimer += dt * 1000;
-  if (blockSpawnTimer > currentSpawnRate) {
-    spawnBlock();
-    blockSpawnTimer = 0;
-  }
+            player.update(dt);
 
-  for (let i = fallingBlocks.length - 1; i >= 0; i--) {
-    const block = fallingBlocks[i];
-    block.update(dt);
+            const difficultyScalar = 1 + (score / 150);
+            let currentSpawnRate = BASE_SPAWN_RATE_MS / difficultyScalar;
+            currentSpawnRate = Math.max(MIN_SPAWN_RATE_MS, currentSpawnRate); 
 
-    if (checkCollision(player, block)) {
-      gameOver = true;
-      document.getElementById("instructions").innerHTML =
-        `SYSTEM FAILURE.<br>Final Score: ${Math.floor(score)}<br>Press 'R' to Reboot.`;
-      return;
-    }
+            blockSpawnTimer += dt * 1000; 
+            if (blockSpawnTimer > currentSpawnRate) {
+                spawnBlock();
+                blockSpawnTimer = 0;
+            }
 
-    if (block.y > canvas.height) {
-      fallingBlocks.splice(i, 1);
-    }
-  }
+            for (let i = fallingBlocks.length - 1; i >= 0; i--) {
+                const block = fallingBlocks[i];
+                block.update(dt);
 
-  score += SCORE_INCREMENT_PER_SEC * dt;
-}
+                if (checkCollision(player, block)) {
+                    gameOver = true;
+                    return; 
+                }
 
-function checkCollision(rect1, rect2) {
-  // Give the player a tiny bit of leniency (a slightly smaller hitbox)
-  const leniency = 4;
-  return (
-    rect1.x + leniency < rect2.x + rect2.width &&
-    rect1.x + rect1.width - leniency > rect2.x &&
-    rect1.y + leniency < rect2.y + rect2.height &&
-    rect1.y + rect1.height - leniency > rect2.y
-  );
-}
+                if (block.y > canvas.height) {
+                    fallingBlocks.splice(i, 1);
+                }
+            }
 
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+            score += SCORE_INCREMENT_PER_SEC * dt;
+        }
 
-  player.draw(ctx);
-  for (const block of fallingBlocks) {
-    block.draw(ctx);
-  }
+        function checkCollision(rect1, rect2) {
+            const leniency = 4; 
+            return rect1.x + leniency < rect2.x + rect2.width &&
+                   rect1.x + rect1.width - leniency > rect2.x &&
+                   rect1.y + leniency < rect2.y + rect2.height &&
+                   rect1.y + rect1.height - leniency > rect2.y;
+        }
 
-  // HUD
-  ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-  ctx.font = "bold 20px Consolas, monospace";
-  ctx.fillText(`SCORE: ${Math.floor(score)}`, 15, 30);
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Difficulty Multiplier Display
-  ctx.font = "14px Consolas, monospace";
-  ctx.fillStyle = "#ff9800";
-  ctx.fillText(`THREAT LVL: ${(1 + score / 100).toFixed(1)}x`, 15, 50);
+            player.draw(ctx);
+            for (const block of fallingBlocks) block.draw(ctx);
 
-  if (gameOver) {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // HUD
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = 'bold 20px Consolas, monospace';
+            ctx.fillText(`SCORE: ${Math.floor(score)}`, 15, 30);
 
-    ctx.fillStyle = "#f44336";
-    ctx.font = "bold 50px Consolas, monospace";
-    ctx.textAlign = "center";
-    ctx.fillText("CRITICAL HIT", canvas.width / 2, canvas.height / 2 - 20);
+            if (gameOver) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#eee";
-    ctx.font = "20px Consolas, monospace";
-    ctx.fillText(
-      `Data Survied: ${Math.floor(score)} mb`,
-      canvas.width / 2,
-      canvas.height / 2 + 20,
-    );
+                ctx.fillStyle = '#f44336';
+                ctx.font = 'bold 40px Consolas, monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('CRITICAL HIT', canvas.width / 2, canvas.height / 2 - 20);
+                
+                ctx.fillStyle = '#eee';
+                ctx.font = '20px Consolas, monospace';
+                ctx.fillText(`Data Survived: ${Math.floor(score)} mb`, canvas.width / 2, canvas.height / 2 + 20);
+                
+                ctx.fillStyle = '#00bcd4';
+                ctx.font = '16px Consolas, monospace';
+                ctx.fillText("[ TAP OR PRESS 'R' TO REBOOT ]", canvas.width / 2, canvas.height / 2 + 70);
+                ctx.textAlign = 'left'; 
+            }
+        }
 
-    ctx.fillStyle = "#00bcd4";
-    ctx.font = "16px Consolas, monospace";
-    ctx.fillText(
-      "[ PRESS 'R' TO REINITIALIZE ]",
-      canvas.width / 2,
-      canvas.height / 2 + 60,
-    );
-    ctx.textAlign = "left";
-  }
-}
+        function gameLoop(timestamp) {
+            let dt = (timestamp - lastTime) / 1000; 
+            if (dt > 0.1) dt = 0.1; 
+            lastTime = timestamp;
 
-function gameLoop(timestamp) {
-  let dt = (timestamp - lastTime) / 1000;
-  if (dt > 0.1) dt = 0.1;
-  lastTime = timestamp;
+            update(dt);
+            draw();
 
-  update(dt);
-  draw();
-
-  if (!gameOver) {
-    gameFrame = requestAnimationFrame(gameLoop);
-  }
-}
-
-// Kickstart
-initGame();
+            if (!gameOver) {
+                gameFrame = requestAnimationFrame(gameLoop);
+            }
+        }

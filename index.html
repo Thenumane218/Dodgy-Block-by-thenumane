@@ -1,23 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dodgy Block - By thenumane</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="game-container">
-      <h1>Dodgy Block</h1>
-      <p>Left/Right Arrows. Survive the escalating threat.</p>
-      <p>
-        <strong>Orange</strong>: Normal | <strong>Purple</strong>: Wobbler |
-        <strong>Red</strong>: Chaser
-      </p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dodgy Block by thenumane</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="startScreen">
+        <h1>System Ready</h1>
+        <div class="controls-info">
+            <strong>Supported Controls:</strong>
+            <ul>
+                <li>Desktop: Left/Right Arrow Keys</li>
+                <li>Mobile: Tap Left/Right side of screen</li>
+                <li>Mobile: Tilt device (if permitted)</li>
+            </ul>
+        </div>
+        <button id="startBtn">Boot Engine</button>
     </div>
-    <canvas id="gameCanvas" width="600" height="400"></canvas>
-    <p id="instructions" class="instructions"></p>
+
+    <div class="game-header">
+        <h1>Dodgy Block</h1>
+        <p><strong>Orange</strong>: Normal | <strong>Purple</strong>: Wobbler | <strong>Red</strong>: Chaser</p>
+    </div>
+    
+    <!-- Internal resolution stays fixed. CSS handles the visual scaling. -->
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
 
     <script src="script.js"></script>
-  </body>
+</body>
 </html>
