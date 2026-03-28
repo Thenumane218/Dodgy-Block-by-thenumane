@@ -28,11 +28,35 @@ const BASE_SPAWN_RATE_MS = 800;
 const MIN_SPAWN_RATE_MS = 200; 
 const SCORE_INCREMENT_PER_SEC = 10; 
 
-// --- Keyboard Listeners ---
+// --- Keyboard Listeners & State Management ---
 document.addEventListener('keydown', (e) => {
     keys[e.code] = true;
-    if (['ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
-    if (gameOver && e.code === 'KeyR') initGame(); 
+    
+    // Added 'Enter' to the array of keys that prevent default browser behavior
+    if (['ArrowLeft', 'ArrowRight', 'Space', 'KeyA', 'KeyD', 'KeyW', 'KeyS', 'Enter'].includes(e.code)) {
+        e.preventDefault();
+    }
+    
+    // GLOBAL ENTER KEY INTERCEPT: Boot the game if the start screen is visible
+    if (e.code === 'Enter' && startScreen.style.display !== 'none') {
+        startBtn.click(); 
+    }
+
+    // Allow Spacebar, 'R', OR 'Enter' to restart on Game Over
+    if (gameOver && (e.code === 'KeyR' || e.code === 'Space' || e.code === 'Enter')) {
+        initGame(); 
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    keys[e.code] = false;
+});
+
+// THE ANTI-GHOSTING PROTOCOL
+window.addEventListener('blur', () => {
+    for (const key in keys) keys[key] = false;
+    touchingLeft = false;
+    touchingRight = false;
 });
 document.addEventListener('keyup', (e) => keys[e.code] = false);
 
@@ -58,6 +82,16 @@ if (btnLeft && btnRight) {
 } else {
     console.warn("Mobile UI buttons not found in DOM. Defaulting to keyboard/tilt only.");
 }
+
+// --- UNIVERSAL REBOOT LISTENER (The Missing Piece) ---
+const handleReboot = (e) => {
+    // Prevent restarting if the user accidentally clicks a UI button
+    if (gameOver && e.target.tagName !== 'BUTTON') {
+        initGame();
+    }
+};
+document.body.addEventListener('touchstart', handleReboot, { passive: false });
+document.body.addEventListener('click', handleReboot);
 
 // --- Sensor Boot ---
 startBtn.addEventListener('click', () => {
@@ -166,8 +200,10 @@ function initGame() {
     lastTime = performance.now(); 
     
     for (const key in keys) keys[key] = false;
-    btnLeft.classList.remove('active');
-    btnRight.classList.remove('active');
+    if (btnLeft && btnRight) {
+        btnLeft.classList.remove('active');
+        btnRight.classList.remove('active');
+    }
 
     if (gameFrame) cancelAnimationFrame(gameFrame);
     gameLoop(performance.now());
