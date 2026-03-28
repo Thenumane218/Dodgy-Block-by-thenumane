@@ -37,27 +37,27 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => keys[e.code] = false);
 
 // --- EXPLICIT UI BUTTON LISTENERS ---
-const pressLeft = (e) => { e.preventDefault(); touchingLeft = true; btnLeft.classList.add('active'); };
-const releaseLeft = (e) => { e.preventDefault(); touchingLeft = false; btnLeft.classList.remove('active'); };
+if (btnLeft && btnRight) {
+    const pressLeft = (e) => { e.preventDefault(); touchingLeft = true; btnLeft.classList.add('active'); };
+    const releaseLeft = (e) => { e.preventDefault(); touchingLeft = false; btnLeft.classList.remove('active'); };
 
-const pressRight = (e) => { e.preventDefault(); touchingRight = true; btnRight.classList.add('active'); };
-const releaseRight = (e) => { e.preventDefault(); touchingRight = false; btnRight.classList.remove('active'); };
+    const pressRight = (e) => { e.preventDefault(); touchingRight = true; btnRight.classList.add('active'); };
+    const releaseRight = (e) => { e.preventDefault(); touchingRight = false; btnRight.classList.remove('active'); };
 
-btnLeft.addEventListener('touchstart', pressLeft, {passive: false});
-btnLeft.addEventListener('touchend', releaseLeft, {passive: false});
-btnLeft.addEventListener('mousedown', pressLeft);
-btnLeft.addEventListener('mouseup', releaseLeft);
-btnLeft.addEventListener('mouseleave', releaseLeft); 
+    btnLeft.addEventListener('touchstart', pressLeft, {passive: false});
+    btnLeft.addEventListener('touchend', releaseLeft, {passive: false});
+    btnLeft.addEventListener('mousedown', pressLeft);
+    btnLeft.addEventListener('mouseup', releaseLeft);
+    btnLeft.addEventListener('mouseleave', releaseLeft); 
 
-btnRight.addEventListener('touchstart', pressRight, {passive: false});
-btnRight.addEventListener('touchend', releaseRight, {passive: false});
-btnRight.addEventListener('mousedown', pressRight);
-btnRight.addEventListener('mouseup', releaseRight);
-btnRight.addEventListener('mouseleave', releaseRight);
-
-document.body.addEventListener('touchstart', (e) => {
-    if (gameOver && e.target.tagName !== 'BUTTON') initGame();
-});
+    btnRight.addEventListener('touchstart', pressRight, {passive: false});
+    btnRight.addEventListener('touchend', releaseRight, {passive: false});
+    btnRight.addEventListener('mousedown', pressRight);
+    btnRight.addEventListener('mouseup', releaseRight);
+    btnRight.addEventListener('mouseleave', releaseRight);
+} else {
+    console.warn("Mobile UI buttons not found in DOM. Defaulting to keyboard/tilt only.");
+}
 
 // --- Sensor Boot ---
 startBtn.addEventListener('click', () => {
