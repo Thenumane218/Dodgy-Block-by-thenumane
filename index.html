@@ -3,31 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dodgy Block by thenumane</title>
+    <title>Dodge the Blocks - Godmode Architecture</title>
+    
+    <!-- Link to the separated CSS file -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Link to the separated JS file. 'defer' is critical here! -->
+    <script src="game.js" defer></script>
 </head>
 <body>
     <div id="startScreen">
         <h1>System Ready</h1>
         <div class="controls-info">
-            <strong>Supported Controls:</strong>
-            <ul>
-                <li>Desktop: Left/Right Arrow Keys</li>
-                <li>Mobile: Tap Left/Right side of screen</li>
-                <li>Mobile: Tilt device (if permitted)</li>
-            </ul>
+            <strong>Controls:</strong><br>
+            - Desktop: Arrow Keys<br>
+            - Mobile: On-Screen Buttons or Tilt
         </div>
         <button id="startBtn">Boot Engine</button>
     </div>
 
     <div class="game-header">
-        <h1>Dodgy Block</h1>
+        <h1>Dodge the Blocks</h1>
         <p><strong>Orange</strong>: Normal | <strong>Purple</strong>: Wobbler | <strong>Red</strong>: Chaser</p>
     </div>
     
-    <!-- Internal resolution stays fixed. CSS handles the visual scaling. -->
     <canvas id="gameCanvas" width="400" height="600"></canvas>
 
-    <script src="script.js"></script>
+    <div id="mobileControls">
+        <button class="control-btn" id="btnLeft">LEFT</button>
+        <button class="control-btn" id="btnRight">RIGHT</button>
+    </div>
 </body>
 </html>
