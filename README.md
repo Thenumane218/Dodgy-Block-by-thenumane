@@ -2,7 +2,17 @@
 
 **Dodgy_Block** is a high-octane, browser-based survival arcade game built with a focus on **Realtime Synchronization**, **Identity Security**, and **Anti-Cheat Integrity**. Survive the corruption, dodge the blocks, and claim your spot on the Global Daily Top 10.
 
-![Dodgy_Block Preview](assets/images/logo.svg)
+<p align="center">
+  <img src="./assets/images/logo.svg" alt="Project Overview" width="150">
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
+  <a href="https://github.com/tkarim45/Beginner-Data-Science-Projects/stargazers"><img src="https://img.shields.io/github/stars/tkarim45/Beginner-Data-Science-Projects" alt="Stars"></a>
+  <a href="https://github.com/tkarim45/Beginner-Data-Science-Projects/network/members"><img src="https://img.shields.io/github/forks/tkarim45/Beginner-Data-Science-Projects" alt="Forks"></a>
+  <a href="https://github.com/tkarim45/Beginner-Data-Science-Projects/issues"><img src="https://img.shields.io/github/issues/tkarim45/Beginner-Data-Science-Projects" alt="Issues"></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
+</p>
 
 ---
 
