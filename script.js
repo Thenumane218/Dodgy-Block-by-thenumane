@@ -205,15 +205,29 @@ async function submitScoreToNetwork(finalScore) {
     const localBest = parseFloat(localStorage.getItem("godmode_best_score")) || 0;
     const duration = (performance.now() - gameStartTime) / 1000;
     
-    if (roundedScore / duration > 15 && roundedScore > 50) return false; 
+    // 1. Anti-Cheat Check
+    if (roundedScore / duration > 15 && roundedScore > 50) {
+        console.warn("Score rejected by anti-cheat.");
+        return false; 
+    }
+    
+    // 2. Personal Best Check
     if (roundedScore <= localBest) return false;
 
-    const { error } = await db.from("leaderboard").upsert({ username: currentUsername, score: roundedScore }, { onConflict: "username" });
-    if (!error) {
-        localStorage.setItem("godmode_best_score", roundedScore);
-        return true; 
+    // 3. THE FIX: Use .update() instead of .upsert()
+    const { error } = await db.from("leaderboard")
+        .update({ score: roundedScore })
+        .eq("username", currentUsername);
+
+    if (error) {
+        console.error("Database Error:", error.message);
+        return false;
     }
-    return false;
+
+    // 4. Success Pipeline
+    localStorage.setItem("godmode_best_score", roundedScore);
+    console.log("Network sync successful:", roundedScore);
+    return true; 
 }
 
 async function fetchAndRenderLeaderboard() {
