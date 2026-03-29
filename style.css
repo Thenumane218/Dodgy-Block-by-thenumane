@@ -512,3 +512,33 @@ input[type="password"] {
   from { opacity: 1; transform: scale(1); }
   to { opacity: 0.3; transform: scale(1.1); }
 }
+
+.developer-credit {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: rgba(255, 255, 255, 0.6); /* Semi-transparent white */
+    font-size: 14px;
+    letter-spacing: 1px;
+    pointer-events: none; /* So it doesn't interfere with clicking game buttons */
+    z-index: 100;
+}
+
+.developer-credit span {
+    color: #00ffcc; /* Matches your Dodgy_Block accent color */
+    font-weight: bold;
+}
+
+.developer-credit .heart {
+    color: #ff4d4d;
+    display: inline-block;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
