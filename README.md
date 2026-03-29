@@ -8,9 +8,9 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
-  <a href="https://github.com/tkarim45/Beginner-Data-Science-Projects/stargazers"><img src="https://img.shields.io/github/stars/tkarim45/Beginner-Data-Science-Projects" alt="Stars"></a>
-  <a href="https://github.com/tkarim45/Beginner-Data-Science-Projects/network/members"><img src="https://img.shields.io/github/forks/tkarim45/Beginner-Data-Science-Projects" alt="Forks"></a>
-  <a href="https://github.com/tkarim45/Beginner-Data-Science-Projects/issues"><img src="https://img.shields.io/github/issues/tkarim45/Beginner-Data-Science-Projects" alt="Issues"></a>
+  <a href="https://github.com/Thenumane218/Dodgy-Block-by-thenumane"><img src="https://img.shields.io/github/stars/Thenumane218/Dodgy-Block-by-thenumane" alt="Stars"></a>
+  <a href="https://github.com/Thenumane218/Dodgy-Block-by-thenumane"><img src="https://img.shields.io/github/forks/Thenumane218/Dodgy-Block-by-thenumane" alt="Forks"></a>
+  <a href="https://github.com/Thenumane218/Dodgy-Block-by-thenumane/issues"><img src="https://img.shields.io/github/issues/Thenumane218/Dodgy-Block-by-thenumane" alt="Issues"></a>
   <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
 </p>
 
