@@ -35,6 +35,23 @@ const displayUsername = document.getElementById("displayUsername");
 const logoutBtn = document.getElementById("logoutBtn");
 const soundToggleBtn = document.getElementById("soundToggleBtn");
 
+// --- CANVAS SIZE FIX ---
+// Enforce canvas display size via JS so no CSS rule (cached or otherwise) can
+// stretch it beyond its 400x600 drawing buffer. aspect-ratio:2/3 + max-height:70vh
+// in style.css was making the canvas render at ~504x756 on 1080p screens (1.26x zoom).
+function enforceCanvasSize() {
+    const maxH = window.innerHeight - 120; // leave room for header + mobile controls
+    const scale = Math.min(1, maxH / 600, window.innerWidth / 400);
+    canvas.style.width      = Math.floor(400 * scale) + 'px';
+    canvas.style.height     = Math.floor(600 * scale) + 'px';
+    canvas.style.maxWidth   = '100vw';
+    canvas.style.aspectRatio = 'unset';
+    canvas.style.objectFit  = 'unset';
+    canvas.style.maxHeight  = 'none';
+}
+enforceCanvasSize();
+window.addEventListener('resize', enforceCanvasSize);
+
 // --- State Management ---
 let currentUsername = localStorage.getItem("godmode_callsign") || "";
 let authMode = "login";
@@ -131,6 +148,29 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keyup", (e) => { if (e.target.tagName !== "INPUT") keys[e.code] = false; });
+
+// --- FIX: Mobile Button Controls ---
+// Wire up the LEFT and RIGHT touch buttons so they set the same
+// keys flags used by the keyboard handler. passive:false + preventDefault()
+// prevents ghost mouse events from firing after touch, avoiding double-input.
+const btnLeft  = document.getElementById("btnLeft");
+const btnRight = document.getElementById("btnRight");
+
+btnLeft.addEventListener("touchstart",  e => { e.preventDefault(); keys["ArrowLeft"]  = true;  }, { passive: false });
+btnLeft.addEventListener("touchend",    e => { e.preventDefault(); keys["ArrowLeft"]  = false; }, { passive: false });
+btnLeft.addEventListener("touchcancel", e => { e.preventDefault(); keys["ArrowLeft"]  = false; }, { passive: false });
+
+btnRight.addEventListener("touchstart",  e => { e.preventDefault(); keys["ArrowRight"] = true;  }, { passive: false });
+btnRight.addEventListener("touchend",    e => { e.preventDefault(); keys["ArrowRight"] = false; }, { passive: false });
+btnRight.addEventListener("touchcancel", e => { e.preventDefault(); keys["ArrowRight"] = false; }, { passive: false });
+
+// Mouse fallback (useful for desktop testing of mobile layout)
+btnLeft.addEventListener("mousedown",  () => keys["ArrowLeft"]  = true);
+btnLeft.addEventListener("mouseup",    () => keys["ArrowLeft"]  = false);
+btnLeft.addEventListener("mouseleave", () => keys["ArrowLeft"]  = false);
+btnRight.addEventListener("mousedown",  () => keys["ArrowRight"] = true);
+btnRight.addEventListener("mouseup",    () => keys["ArrowRight"] = false);
+btnRight.addEventListener("mouseleave", () => keys["ArrowRight"] = false);
 
 // --- Auth & Network Logic ---
 
