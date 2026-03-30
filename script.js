@@ -548,21 +548,26 @@ function update(dt) {
   if (gameOver) return;
   player.update(dt);
   score += SCORE_INCREMENT_PER_SEC * dt;
-  blockSpawnTimer += dt * 1000;
+  blockSpawnTimer += dt * 1000; // Slower spawn rate scaling (divide score by 400 instead of 150)
 
-  // RESTORED: Block Spawning Logic
-  if (
-    blockSpawnTimer >
-    Math.max(MIN_SPAWN_RATE_MS, BASE_SPAWN_RATE_MS / (1 + score / 150))
-  ) {
-    const x = Math.random() * (canvas.width - BLOCK_SIZE);
-    const speed = (150 + Math.random() * 150) * (1 + score / 100);
-    let type =
-      score > 120 && Math.random() > 0.8
-        ? "chaser"
-        : score > 50 && Math.random() > 0.6
-          ? "wobbler"
-          : "normal";
+  // BALANCED: Block Spawning Logic
+  const currentSpawnRate = Math.max(
+    MIN_SPAWN_RATE_MS,
+    BASE_SPAWN_RATE_MS / (1 + score / 450),
+  );
+
+  if (blockSpawnTimer > currentSpawnRate) {
+    const x = Math.random() * (canvas.width - BLOCK_SIZE); // Slower speed scaling (divide score by 400 instead of 100, slightly lower base random speed)
+    const speed = (150 + Math.random() * 100) * (1 + score / 400); // Delayed enemy types for a smoother difficulty ramp
+    let type = "normal";
+    if (score > 360 && Math.random() > 0.85) {
+      // Unlock Chasers at ~30 seconds (15% chance to spawn)
+      type = "chaser";
+    } else if (score > 180 && Math.random() > 0.7) {
+      // Unlock Wobblers at ~15 seconds (30% chance to spawn)
+      type = "wobbler";
+    }
+
     let b = blockPool.length > 0 ? blockPool.pop() : new Block();
     b.init(x, -BLOCK_SIZE, speed, type);
     activeBlocks.push(b);
@@ -573,7 +578,6 @@ function update(dt) {
   for (let i = activeBlocks.length - 1; i >= 0; i--) {
     activeBlocks[i].update(dt);
 
-    // FIXED: Combined Collision Detection
     if (
       activeBlocks[i].x < player.x + player.width &&
       activeBlocks[i].x + activeBlocks[i].width > player.x &&
@@ -599,6 +603,7 @@ function update(dt) {
 
       gameOverScreen.style.display = "flex";
       playTone(150, "sawtooth", 0.5, 0.3);
+      break;
     }
 
     if (activeBlocks[i].y > canvas.height)
@@ -626,13 +631,13 @@ function gameLoop(t) {
   gameFrame = requestAnimationFrame(gameLoop);
 }
 
-startBtn.addEventListener("click", async () => {
-  if (!currentUsername) {
-    if (!(await authenticateUser())) return;
-  }
-  initAudio();
-  bootGame();
-});
+// startBtn.addEventListener("click", async () => {
+//   if (!currentUsername) {
+//     if (!(await authenticateUser())) return;
+//   }
+//   initAudio();
+//   bootGame();
+// });
 
 showLeaderboardBtn.addEventListener("click", () => {
   leaderboardScreen.style.display = "flex";
