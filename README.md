@@ -28,7 +28,7 @@
 
 ## 🚀 Live Deployment
 
-**[https://dodgyblock.netlify.app/](https://dodgyblock.netlify.app/)**
+**[https://dodgyblock.vercel.app/](https://dodgyblock.vercel.app/)**
 
 ---
 
