@@ -16,6 +16,11 @@
     <title>Dodgy_Block by thenumane</title>
     <link rel="icon" type="image/svg+xml" href="./assets/images/logo.svg" />
     <link rel="stylesheet" href="style.css" />
+    <script>
+      window.SUPABASE_URL = "https://kjjeeaqgkpjvfpbtlzui.supabase.co";
+      window.SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtqamVlYXFna3BqdmZwYnRsenVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTU1OTgsImV4cCI6MjA5MDI5MTU5OH0.jAk9EDyJszjYudUkQgRssJ2vBDDxZljr7vAZFhVvqIw";
+    </script>
   </head>
   <body>
     <!-- Start & Registration Screen -->
@@ -113,22 +118,22 @@
     <!-- Creative Leaderboard Overlay -->
     <div id="leaderboardScreen" style="display: none">
       <!-- <div class="menu-panel" style="border-color: #ff9800"> -->
-        <h2>DAILY TOP 10</h2>
-        <p
-          class="subtitle"
-          style="font-size: 0.8em; margin-top: -10px; color: #ff9800"
-        >
-          RESETS IN: <span id="resetTimer">--:--:--</span>
-        </p>
-        <div
-          id="leaderboardData"
-          style="width: 100%; min-height: 50px; margin: 20px 0"
-        >
-          Scanning Network...
-        </div>
-        <button id="closeLeaderboardBtn" class="secondary-btn">
-          CLOSE TERMINAL
-        </button>
+      <h2>DAILY TOP 10</h2>
+      <p
+        class="subtitle"
+        style="font-size: 0.8em; margin-top: -10px; color: #ff9800"
+      >
+        RESETS IN: <span id="resetTimer">--:--:--</span>
+      </p>
+      <div
+        id="leaderboardData"
+        style="width: 100%; min-height: 50px; margin: 20px 0"
+      >
+        Scanning Network...
+      </div>
+      <button id="closeLeaderboardBtn" class="secondary-btn">
+        CLOSE TERMINAL
+      </button>
       <!-- </div> -->
     </div>
 
@@ -201,6 +206,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
     <script src="script.js" defer></script>
   </body>
 </html>
