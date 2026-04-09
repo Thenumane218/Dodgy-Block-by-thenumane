@@ -1,3 +1,8 @@
+/* --- GLOBAL BOX SIZING (Add to very top of style.css) --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 /* --- CORE ENGINE LAYOUT --- */
 body {
     display: flex;
@@ -108,8 +113,9 @@ canvas {
     border: 1px solid rgba(0, 188, 212, 0.2);
     border-radius: 16px;
     padding: 40px 30px;
-    width: 90%;
-    max-width: 450px;
+    width: 92%; 
+    max-width: 420px; 
+    margin: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -514,7 +520,7 @@ input[type="password"] {
 }
 
 .developer-credit {
-    position: fixed;
+    position: absolute;
     bottom: 10px;
     width: 100%;
     text-align: center;
@@ -541,4 +547,137 @@ input[type="password"] {
     0% { transform: scale(1); }
     50% { transform: scale(1.2); }
     100% { transform: scale(1); }
+}
+
+/* --- COMPACT UI FOR SHORTER SCREENS --- */
+/* This shrinks the spacing and element sizes so the menu fits perfectly without scrolling */
+@media (max-height: 850px) {
+    .menu-panel {
+        padding: 20px 25px;
+        max-height: 95vh;
+    }
+    
+    .menu-logo {
+        width: 100px; /* Shrinks the logo */
+    }
+    
+    .title-group { 
+        margin-bottom: 15px; 
+    }
+    
+    .glitch-title {
+        font-size: clamp(1.8em, 4vw, 2.5em);
+    }
+    
+    .auth-box { 
+        margin-bottom: 15px; 
+    }
+    
+    #welcomeBox {
+        margin-bottom: 15px !important; /* Overrides inline style */
+    }
+    
+    .controls-info { 
+        margin-bottom: 15px; 
+        gap: 5px; 
+    }
+    
+    .action-group { 
+        gap: 10px; 
+    }
+    
+    .primary-btn { 
+        padding: 12px; 
+        font-size: 1.1em; 
+    }
+    
+    .secondary-btn { 
+        padding: 10px; 
+    }
+    
+    .developer-credit {
+        position: relative; /* Changes it from fixed to standard positioning */
+        bottom: auto;       /* Removes the fixed bottom placement */
+        margin-top: 15px;   /* Adds the space you requested above it */
+        font-size: 12px;
+    }
+}
+
+/* =========================================
+   MOBILE PHONE RESPONSIVENESS (Narrow Screens)
+   ========================================= */
+@media (max-width: 600px) {
+    /* 1. Condense Main Menus to fit narrow widths */
+    .menu-panel {
+        padding: 25px 15px;
+    }
+
+    .glitch-title {
+        font-size: 2.2em; 
+        letter-spacing: 2px;
+    }
+
+    /* 2. Fix iOS Auto-Zoom Bug on Inputs */
+    /* Mobile browsers zoom in if font-size is less than 16px. This forces 16px */
+    #usernameInput, #passwordInput {
+        font-size: 16px;
+        padding: 12px 10px;
+    }
+
+    /* 3. Button adjustments for fat-finger tapping without taking up whole screen */
+    .primary-btn {
+        padding: 15px;
+        font-size: 1.1em;
+    }
+
+    .secondary-btn {
+        padding: 12px;
+        font-size: 0.85em;
+    }
+
+    /* 4. In-Game Mobile Controls Tuning */
+    #mobileControls {
+        margin-top: 10px;
+        padding: 0;
+    }
+
+    .control-btn {
+        padding: 15px 10px;
+        font-size: 1.2em;
+        margin: 0 5px;
+        border-radius: 8px; /* Slightly sharper for compact feel */
+    }
+
+    .game-header {
+        margin-bottom: 5px;
+    }
+
+    /* 5. Ensure Game Over / Leaderboard fit perfectly */
+    #gameOverScreen, #leaderboardScreen {
+        width: 95%;
+        padding: 30px 15px;
+    }
+
+    .critical-text {
+        font-size: 2.2em;
+    }
+    
+    .go-btn {
+        padding: 12px;
+        font-size: 1em;
+    }
+
+    .developer-credit {
+        position: relative; 
+        bottom: auto;
+        margin-top: 30px; /* Increased from 15px to 30px for mobile */
+        font-size: 11px;  /* Slightly smaller font for narrow screens */
+    }
+}
+
+/* Ensure absolute full height to prevent mobile browser URL bar jumps */
+html, body {
+    height: 100%;
+    width: 100%;
+    position: fixed; /* Locks the background layer on mobile */
 }
